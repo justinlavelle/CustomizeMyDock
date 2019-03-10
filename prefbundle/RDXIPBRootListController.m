@@ -23,6 +23,7 @@
 	[headerView setImage:headerImage];
 	[headerView setContentMode:UIViewContentModeScaleAspectFit];
 	[headerView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
+	[headerView setBackgroundColor:[UIColor whiteColor]];
 
 	self.table.tableHeaderView = headerView;
 }
