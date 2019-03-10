@@ -24,31 +24,31 @@ static int oldCornerRadius;
 	%orig;
 	if(enabled == YES) {
 		if (backgroundViewAlpha == nil) {
-			backgroundViewAlpha = MSHookIvar<SBWallpaperEffectView*>(dockView, "_backgroundView").alpha;
+			backgroundViewAlpha = MSHookIvar<SBWallpaperEffectView*>(self, "_backgroundView").alpha;
 		}
 		if (oldBgColor == nil) {
-			oldBgColor = dockView.backgroundColor;
+			oldBgColor = self.backgroundColor;
 		}
 		if (oldCornerRadius == nil) {
-			oldCornerRadius = dockView.layer.cornerRadius;
+			oldCornerRadius = self.layer.cornerRadius;
 		}
 		if(hideDock == YES) {
 			//Remove Dock Background
-			MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = 0.0f;
+			MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = 0.0f;
 		} else {
 			// Remove SBWallpaperEffectView so we can actually see the dock ;)
-  			MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = 0.0f;
+  			MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = 0.0f;
 
 			//Color Customization
-    		dockView.backgroundColor = LCPParseColorString(dockColor, dockColor);
+    		self.backgroundColor = LCPParseColorString(dockColor, dockColor);
 
 			//Corner Radius Customization
-			dockView.layer.cornerRadius = cornerRadius;
+			self.layer.cornerRadius = cornerRadius;
 		}
 	} else {
-		MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = backgroundViewAlpha;
-		dockView.backgroundColor = oldBgColor;
-		dockView.layer.cornerRadius = oldCornerRadius;
+		MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = backgroundViewAlpha;
+		self.backgroundColor = oldBgColor;
+		self.layer.cornerRadius = oldCornerRadius;
 	}	
 }
 
