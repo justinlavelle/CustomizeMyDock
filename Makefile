@@ -10,4 +10,4 @@ after-install::
 SUBPROJECTS += prefbundle
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
-CustomizeMyDock_LIBRARIES = colorpicker
+CustomizeMyDock_LIBRARIES = libcolorpicker
