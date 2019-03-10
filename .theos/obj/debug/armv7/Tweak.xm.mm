@@ -2,14 +2,21 @@
 #import <UIKit/UIKit.h>
 #import "libcolorpicker.h" 
 
+static BOOL enabled = true;
+static BOOL hideDock = false;
+static int cornerRadius = 15;
+static NSString* dockColor = @"#FFFFFF";
+
+static float backgroundViewAlpha;
+static UIColor* oldBgColor;
+static int oldCornerRadius;
+
 @interface SBWallpaperEffectView : UIView
 @end
 
 @interface SBDockView : UIView
 @property(retain, nonatomic) SBWallpaperEffectView *_backgroundView;
 @end
-
-NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/private/var/mobile/Library/Preferences/com.conorthedev.customizemydock.prefbundle.plist"];
 
 
 #include <substrate.h>
@@ -35,36 +42,60 @@ NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile
 @class SBDockView; 
 static void (*_logos_orig$_ungrouped$SBDockView$setBackgroundAlpha$)(_LOGOS_SELF_TYPE_NORMAL SBDockView* _LOGOS_SELF_CONST, SEL, double); static void _logos_method$_ungrouped$SBDockView$setBackgroundAlpha$(_LOGOS_SELF_TYPE_NORMAL SBDockView* _LOGOS_SELF_CONST, SEL, double); 
 
-#line 13 "Tweak.xm"
+#line 20 "Tweak.xm"
 
 
 static void _logos_method$_ungrouped$SBDockView$setBackgroundAlpha$(_LOGOS_SELF_TYPE_NORMAL SBDockView* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, double arg1) {
 	
 	_logos_orig$_ungrouped$SBDockView$setBackgroundAlpha$(self, _cmd, arg1);
-
-	static BOOL enabled = ([[prefs objectForKey:@"Enabled"] boolValue]);
-	static BOOL hideDock = ([[prefs objectForKey:@"HideDock"] boolValue]);
-	static int cornerRadius = ([[prefs objectForKey:@"cCornerRadius"] intValue]);
-	static NSString * dockColor = ([[prefs objectForKey:@"DockColor"] stringValue]);
-
 	if(enabled == YES) {
+		if (backgroundViewAlpha == nil) {
+			backgroundViewAlpha = MSHookIvar<SBWallpaperEffectView*>(dockView, "_backgroundView").alpha;
+		}
+		if (oldBgColor == nil) {
+			oldBgColor = dockView.backgroundColor;
+		}
+		if (oldCornerRadius == nil) {
+			oldCornerRadius = dockView.layer.cornerRadius;
+		}
 		if(hideDock == YES) {
 			
-			MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = 0.0f;
+			MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = 0.0f;
 		} else {
 			
-  			MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = 0.0f;
+  			MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = 0.0f;
 
 			
-    		self.backgroundColor = LCPParseColorString(dockColor, dockColor);
+    		dockView.backgroundColor = LCPParseColorString(dockColor, dockColor);
 
 			
-			self.layer.cornerRadius = cornerRadius;
+			dockView.layer.cornerRadius = cornerRadius;
 		}
-	}
+	} else {
+		MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = backgroundViewAlpha;
+		dockView.backgroundColor = oldBgColor;
+		dockView.layer.cornerRadius = oldCornerRadius;
+	}	
 }
 
 
+
+static void loadPreferences() {
+	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.conorthedev.customizemydock.prefbundle.plist"];
+	NSLog(@"CustomizeMyDock: reading prefs");
+	if (prefs) {
+		enabled = [prefs objectForKey:@"Enabled"] ? [[prefs objectForKey:@"Enabled"] boolValue] : enabled;
+		hideDock = [prefs objectForKey:@"HideDock"] ? [[prefs objectForKey:@"HideDock"] boolValue] : hideDock;
+		cornerRadius = [prefs objectForKey:@"cCornerRadius"] ? [[prefs objectForKey:@"cCornerRadius"] intValue] : cornerRadius;
+		dockColor = [prefs objectForKey:@"DockColor"] ? [[prefs objectForKey:@"DockColor"] stringValue] : dockColor;
+	}
+	[prefs release];
+}
+
+static __attribute__((constructor)) void _logosLocalCtor_bbe4a825(int __unused argc, char __unused **argv, char __unused **envp) {
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("com.conorthedev.customizemydock.prefbundle/updated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	loadPreferences();
+}
 static __attribute__((constructor)) void _logosLocalInit() {
 {Class _logos_class$_ungrouped$SBDockView = objc_getClass("SBDockView"); MSHookMessageEx(_logos_class$_ungrouped$SBDockView, @selector(setBackgroundAlpha:), (IMP)&_logos_method$_ungrouped$SBDockView$setBackgroundAlpha$, (IMP*)&_logos_orig$_ungrouped$SBDockView$setBackgroundAlpha$);} }
-#line 42 "Tweak.xm"
+#line 73 "Tweak.xm"

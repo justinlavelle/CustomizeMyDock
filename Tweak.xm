@@ -1,6 +1,15 @@
 #import <UIKit/UIKit.h>
 #import "libcolorpicker.h" // local since it's in or proj folder
 
+static BOOL enabled = true;
+static BOOL hideDock = false;
+static int cornerRadius = 15;
+static NSString* dockColor = @"#FFFFFF";
+
+static float backgroundViewAlpha;
+static UIColor* oldBgColor;
+static int oldCornerRadius;
+
 @interface SBWallpaperEffectView : UIView
 @end
 
@@ -8,34 +17,56 @@
 @property(retain, nonatomic) SBWallpaperEffectView *_backgroundView;
 @end
 
-NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/private/var/mobile/Library/Preferences/com.conorthedev.customizemydock.prefbundle.plist"];
-
 %hook SBDockView
 
 -(void)setBackgroundAlpha:(double)arg1 {
 	// Runs original method
 	%orig;
-
-	static BOOL enabled = ([[prefs objectForKey:@"Enabled"] boolValue]);
-	static BOOL hideDock = ([[prefs objectForKey:@"HideDock"] boolValue]);
-	static int cornerRadius = ([[prefs objectForKey:@"cCornerRadius"] intValue]);
-	static NSString * dockColor = ([[prefs objectForKey:@"DockColor"] stringValue]);
-
 	if(enabled == YES) {
+		if (backgroundViewAlpha == nil) {
+			backgroundViewAlpha = MSHookIvar<SBWallpaperEffectView*>(dockView, "_backgroundView").alpha;
+		}
+		if (oldBgColor == nil) {
+			oldBgColor = dockView.backgroundColor;
+		}
+		if (oldCornerRadius == nil) {
+			oldCornerRadius = dockView.layer.cornerRadius;
+		}
 		if(hideDock == YES) {
 			//Remove Dock Background
-			MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = 0.0f;
+			MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = 0.0f;
 		} else {
 			// Remove SBWallpaperEffectView so we can actually see the dock ;)
-  			MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = 0.0f;
+  			MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = 0.0f;
 
 			//Color Customization
-    		self.backgroundColor = LCPParseColorString(dockColor, dockColor);
+    		dockView.backgroundColor = LCPParseColorString(dockColor, dockColor);
 
 			//Corner Radius Customization
-			self.layer.cornerRadius = cornerRadius;
+			dockView.layer.cornerRadius = cornerRadius;
 		}
-	}
+	} else {
+		MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = backgroundViewAlpha;
+		dockView.backgroundColor = oldBgColor;
+		dockView.layer.cornerRadius = oldCornerRadius;
+	}	
 }
 
 %end
+
+static void loadPreferences() {
+	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.conorthedev.customizemydock.prefbundle.plist"];
+	NSLog(@"CustomizeMyDock: reading prefs");
+	if (prefs) {
+		enabled = [prefs objectForKey:@"Enabled"] ? [[prefs objectForKey:@"Enabled"] boolValue] : enabled;
+		hideDock = [prefs objectForKey:@"HideDock"] ? [[prefs objectForKey:@"HideDock"] boolValue] : hideDock;
+		cornerRadius = [prefs objectForKey:@"cCornerRadius"] ? [[prefs objectForKey:@"cCornerRadius"] intValue] : cornerRadius;
+		dockColor = [prefs objectForKey:@"DockColor"] ? [[prefs objectForKey:@"DockColor"] stringValue] : dockColor;
+	}
+	[prefs release];
+}
+
+%ctor {
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("com.conorthedev.customizemydock.prefbundle/updated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	loadPreferences();
+}
