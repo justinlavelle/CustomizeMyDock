@@ -10,13 +10,13 @@
 				<key>default</key>
 				<true/>
 				<key>defaults</key>
-				<string>com.conorthedev.customizemydock.prefbundle</string>
+				<string>com.conorthedev.customizemydock.customizemydockprefs</string>
 				<key>key</key>
 				<string>Enabled</string>
 				<key>label</key>
 				<string>Enabled</string>
 				<key>PostNotification</key>
-				<string>com.conorthedev.customizemydock.prefbundle/updated</string>
+				<string>com.conorthedev.customizemydock.customizemydockprefs/updated</string>
 			</dict>
 			<dict>
 				<key>cell</key>
@@ -30,13 +30,13 @@
 				<key>default</key>
 				<false/>
 				<key>defaults</key>
-				<string>com.conorthedev.customizemydock.prefbundle</string>
+				<string>com.conorthedev.customizemydock.customizemydockprefs</string>
 				<key>key</key>
 				<string>HideDock</string>
 				<key>label</key>
 				<string>Hide Dock Background</string>
 				<key>PostNotification</key>
-				<string>com.conorthedev.customizemydock.prefbundle/updated</string>
+				<string>com.conorthedev.customizemydock.customizemydockprefs/updated</string>
 			</dict>
 			<dict>
 				<key>cell</key>
@@ -46,7 +46,7 @@
 				<key>libcolorpicker</key>
 				<dict>
 					<key>defaults</key>
-					<string>com.conorthedev.customizemydock.prefbundle</string>
+					<string>com.conorthedev.customizemydock.customizemydockprefs</string>
 					<key>key</key>
 					<string>DockColor</string>
 					<key>fallback</key>
@@ -59,7 +59,7 @@
 				<key>label</key>
 				<string>Dock Color</string>
 				<key>PostNotification</key>
-				<string>com.conorthedev.customizemydock.prefbundle/updated</string>
+				<string>com.conorthedev.customizemydock.customizemydockprefs/updated</string>
 			</dict>
 			<dict>
 				<key>cell</key>
@@ -77,17 +77,17 @@
 				<key>min</key>
 				<integer>0</integer>
 				<key>CornerRadius</key>
-				<string>com.conorthedev.customizemydock.prefbundle</string>
+				<string>com.conorthedev.customizemydock.customizemydockprefs</string>
 				<key>cell</key>
 				<string>PSSliderCell</string>
 				<key>default</key>
 				<real>15</real>
 				<key>defaults</key>
-				<string>com.conorthedev.customizemydock.prefbundle</string>
+				<string>com.conorthedev.customizemydock.customizemydockprefs</string>
 				<key>key</key>
 				<string>cCornerRadius</string>
 				<key>PostNotification</key>
-				<string>com.conorthedev.customizemydock.prefbundle/updated</string>
+				<string>com.conorthedev.customizemydock.customizemydockprefs/updated</string>
 			</dict>
 			<dict>
 				<key>cell</key>

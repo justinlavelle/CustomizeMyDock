@@ -9,7 +9,7 @@ include $(THEOS_MAKE_PATH)/tweak.mk
 
 after-install::
 	install.exec "killall -9 SpringBoard"
-SUBPROJECTS += prefbundle
+SUBPROJECTS += customizemydockprefs
 include $(THEOS_MAKE_PATH)/aggregate.mk
 
 CustomizeMyDock_LIBRARIES = colorpicker
