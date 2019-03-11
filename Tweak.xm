@@ -52,7 +52,7 @@ static int oldCornerRadius;
 %end
 
 static void loadPreferences() {
-	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.conorthedev.customizemydock.prefbundle.plist"];
+	NSMutableDictionary *prefs = [[NSMutableDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/com.conorthedev.customizemydock.customizemydockprefs.plist"];
 	NSLog(@"CustomizeMyDock: reading prefs");
 	if (prefs) {
 		enabled = [prefs objectForKey:@"Enabled"] ? [[prefs objectForKey:@"Enabled"] boolValue] : enabled;
@@ -64,6 +64,6 @@ static void loadPreferences() {
 }
 
 %ctor {
-	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("com.conorthedev.customizemydock.prefbundle/updated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
+	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("com.conorthedev.customizemydock.customizemydockprefs/updated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	loadPreferences();
 }
