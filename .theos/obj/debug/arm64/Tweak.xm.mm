@@ -4,6 +4,7 @@
 
 static BOOL enabled = true;
 static BOOL hideDock = false;
+static BOOL floatingDock = false;
 static int cornerRadius = 15;
 static NSString* dockColor = @"#FFFFFF";
 
@@ -17,8 +18,6 @@ static int oldCornerRadius;
 @interface SBDockView : UIView
 @property(retain, nonatomic) SBWallpaperEffectView *_backgroundView;
 @end
-
-static SBDockView *sbDockView;
 
 
 #include <substrate.h>
@@ -41,51 +40,61 @@ static SBDockView *sbDockView;
 #define _LOGOS_RETURN_RETAINED
 #endif
 
-@class SBDockView; 
-static void (*_logos_orig$_ungrouped$SBDockView$setBackgroundAlpha$)(_LOGOS_SELF_TYPE_NORMAL SBDockView* _LOGOS_SELF_CONST, SEL, double); static void _logos_method$_ungrouped$SBDockView$setBackgroundAlpha$(_LOGOS_SELF_TYPE_NORMAL SBDockView* _LOGOS_SELF_CONST, SEL, double); 
+@class SBFloatingDockController; @class SBDockView; 
+static void (*_logos_orig$_ungrouped$SBDockView$setBackgroundAlpha$)(_LOGOS_SELF_TYPE_NORMAL SBDockView* _LOGOS_SELF_CONST, SEL, double); static void _logos_method$_ungrouped$SBDockView$setBackgroundAlpha$(_LOGOS_SELF_TYPE_NORMAL SBDockView* _LOGOS_SELF_CONST, SEL, double); static BOOL (*_logos_meta_orig$_ungrouped$SBFloatingDockController$isFloatingDockSupported)(_LOGOS_SELF_TYPE_NORMAL Class _LOGOS_SELF_CONST, SEL); static BOOL _logos_meta_method$_ungrouped$SBFloatingDockController$isFloatingDockSupported(_LOGOS_SELF_TYPE_NORMAL Class _LOGOS_SELF_CONST, SEL); static BOOL (*_logos_orig$_ungrouped$SBFloatingDockController$_systemGestureManagerAllowsFloatingDockGesture)(_LOGOS_SELF_TYPE_NORMAL SBFloatingDockController* _LOGOS_SELF_CONST, SEL); static BOOL _logos_method$_ungrouped$SBFloatingDockController$_systemGestureManagerAllowsFloatingDockGesture(_LOGOS_SELF_TYPE_NORMAL SBFloatingDockController* _LOGOS_SELF_CONST, SEL); 
 
-#line 22 "Tweak.xm"
-static void dockViewHook(SBDockView* dockView) {
-	if(enabled == YES) {
-		if (backgroundViewAlpha == nil) {
-			backgroundViewAlpha = MSHookIvar<SBWallpaperEffectView*>(dockView, "_backgroundView").alpha;
-		}
-		if (oldBgColor == nil) {
-			oldBgColor = dockView.backgroundColor;
-		}
-		if (oldCornerRadius == nil) {
-			oldCornerRadius = dockView.layer.cornerRadius;
-		}
-		if(hideDock == YES) {
-			
-			MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = 0.0f;
-		} else {
-			
-  			MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = 0.0f;
-
-			
-    		dockView.backgroundColor = LCPParseColorString(dockColor, dockColor);
-
-			
-			dockView.layer.cornerRadius = cornerRadius;
-		}
-	} else {
-		MSHookIvar<SBWallpaperEffectView *>(dockView, "_backgroundView").alpha = backgroundViewAlpha;
-		dockView.backgroundColor = oldBgColor;
-		dockView.layer.cornerRadius = oldCornerRadius;
-	}
-	[dockView setNeedsDisplay];
-}
+#line 21 "Tweak.xm"
 
 
 static void _logos_method$_ungrouped$SBDockView$setBackgroundAlpha$(_LOGOS_SELF_TYPE_NORMAL SBDockView* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd, double arg1) {
 	
 	_logos_orig$_ungrouped$SBDockView$setBackgroundAlpha$(self, _cmd, arg1);
-	sbDockView = self;
-	dockViewHook(self);
-	
+	if(enabled == YES && floatingDock == NO) {
+		if (backgroundViewAlpha == nil) {
+			backgroundViewAlpha = MSHookIvar<SBWallpaperEffectView*>(self, "_backgroundView").alpha;
+		}
+		if (oldBgColor == nil) {
+			oldBgColor = self.backgroundColor;
+		}
+		if (oldCornerRadius == nil) {
+			oldCornerRadius = self.layer.cornerRadius;
+		}
+		if(hideDock == YES) {
+			
+			MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = 0.0f;
+		} else {
+			
+  			MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = 0.0f;
+
+			
+    		self.backgroundColor = LCPParseColorString(dockColor, dockColor);
+
+			
+			self.layer.cornerRadius = cornerRadius;
+		}
+	} else if(floatingDock == YES){
+		  	MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = 0.0f;
+
+			
+    		self.backgroundColor = LCPParseColorString(dockColor, dockColor);
+
+			
+			self.layer.cornerRadius = cornerRadius;
+	} else {
+		
+	}
 }
 
+
+
+
+static BOOL _logos_meta_method$_ungrouped$SBFloatingDockController$isFloatingDockSupported(_LOGOS_SELF_TYPE_NORMAL Class _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
+	return floatingDock;
+}
+
+static BOOL _logos_method$_ungrouped$SBFloatingDockController$_systemGestureManagerAllowsFloatingDockGesture(_LOGOS_SELF_TYPE_NORMAL SBFloatingDockController* _LOGOS_SELF_CONST __unused self, SEL __unused _cmd) {
+	return NO;
+}
 
 
 static void loadPreferences() {
@@ -96,17 +105,15 @@ static void loadPreferences() {
 		hideDock = [prefs objectForKey:@"HideDock"] ? [[prefs objectForKey:@"HideDock"] boolValue] : hideDock;
 		cornerRadius = [prefs objectForKey:@"cCornerRadius"] ? [[prefs objectForKey:@"cCornerRadius"] intValue] : cornerRadius;
 		dockColor = [prefs objectForKey:@"DockColor"] ? [[prefs objectForKey:@"DockColor"] stringValue] : dockColor;
+		floatingDock = [prefs objectForKey:@"FloatingDock"] ? [[prefs objectForKey:@"FloatingDock"] boolValue] : floatingDock;
 	}
 	[prefs release];
-	if (sbDockView != nil) {
-		dockViewHook(sbDockView);
-	}
 }
 
-static __attribute__((constructor)) void _logosLocalCtor_d89c9af8(int __unused argc, char __unused **argv, char __unused **envp) {
+static __attribute__((constructor)) void _logosLocalCtor_d6d2aec7(int __unused argc, char __unused **argv, char __unused **envp) {
 	CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), NULL, (CFNotificationCallback)loadPreferences, CFSTR("com.conorthedev.customizemydock.prefbundle/updated"), NULL, CFNotificationSuspensionBehaviorCoalesce);
 	loadPreferences();
 }
 static __attribute__((constructor)) void _logosLocalInit() {
-{Class _logos_class$_ungrouped$SBDockView = objc_getClass("SBDockView"); MSHookMessageEx(_logos_class$_ungrouped$SBDockView, @selector(setBackgroundAlpha:), (IMP)&_logos_method$_ungrouped$SBDockView$setBackgroundAlpha$, (IMP*)&_logos_orig$_ungrouped$SBDockView$setBackgroundAlpha$);} }
-#line 84 "Tweak.xm"
+{Class _logos_class$_ungrouped$SBDockView = objc_getClass("SBDockView"); MSHookMessageEx(_logos_class$_ungrouped$SBDockView, @selector(setBackgroundAlpha:), (IMP)&_logos_method$_ungrouped$SBDockView$setBackgroundAlpha$, (IMP*)&_logos_orig$_ungrouped$SBDockView$setBackgroundAlpha$);Class _logos_class$_ungrouped$SBFloatingDockController = objc_getClass("SBFloatingDockController"); Class _logos_metaclass$_ungrouped$SBFloatingDockController = object_getClass(_logos_class$_ungrouped$SBFloatingDockController); MSHookMessageEx(_logos_metaclass$_ungrouped$SBFloatingDockController, @selector(isFloatingDockSupported), (IMP)&_logos_meta_method$_ungrouped$SBFloatingDockController$isFloatingDockSupported, (IMP*)&_logos_meta_orig$_ungrouped$SBFloatingDockController$isFloatingDockSupported);MSHookMessageEx(_logos_class$_ungrouped$SBFloatingDockController, @selector(_systemGestureManagerAllowsFloatingDockGesture), (IMP)&_logos_method$_ungrouped$SBFloatingDockController$_systemGestureManagerAllowsFloatingDockGesture, (IMP*)&_logos_orig$_ungrouped$SBFloatingDockController$_systemGestureManagerAllowsFloatingDockGesture);} }
+#line 91 "Tweak.xm"

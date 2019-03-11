@@ -1,5 +1,5 @@
 #import <UIKit/UIKit.h>
-#import "libcolorpicker.h" // local since it's in or proj folder
+#import "libcolorpicker.h"
 
 static BOOL enabled = true;
 static BOOL hideDock = false;
@@ -22,7 +22,7 @@ static int oldCornerRadius;
 -(void)setBackgroundAlpha:(double)arg1 {
 	// Runs original method
 	%orig;
-	if(enabled == YES) {
+	if(enabled == YES && floatingDock == NO) {
 		if (backgroundViewAlpha == nil) {
 			backgroundViewAlpha = MSHookIvar<SBWallpaperEffectView*>(self, "_backgroundView").alpha;
 		}
@@ -44,12 +44,9 @@ static int oldCornerRadius;
 
 			//Corner Radius Customization
 			self.layer.cornerRadius = cornerRadius;
-		}
-	} else {
-		MSHookIvar<SBWallpaperEffectView *>(self, "_backgroundView").alpha = backgroundViewAlpha;
-		self.backgroundColor = oldBgColor;
-		self.layer.cornerRadius = oldCornerRadius;
-	}	
+		} else {
+		// Do Nothing
+	}
 }
 
 %end
