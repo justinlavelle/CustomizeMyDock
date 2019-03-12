@@ -17,7 +17,7 @@
 	CGRect frame = CGRectMake(0, 0, self.table.bounds.size.width, 127);
 
 	UIImage *headerImage = [[UIImage alloc]
-		initWithContentsOfFile:[[NSBundle bundleWithPath:@"/Library/PreferenceBundles/customizemydockprefs.bundle"] pathForResource:@"header" ofType:@"png"]];
+		initWithContentsOfFile:[[NSBundle bundleWithPath:@"/Library/PreferenceBundles/CustomizeMyDockPrefs.bundle"] pathForResource:@"header" ofType:@"png"]];
 
 	UIImageView *headerView = [[UIImageView alloc] initWithFrame:frame];
 	[headerView setImage:headerImage];

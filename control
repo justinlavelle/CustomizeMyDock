@@ -1,9 +1,9 @@
 Package: com.conorthedev.customizemydock
 Name: customizemydock
-Depends: mobilesubstrate
-Version: 0.0.1
+Depends: mobilesubstrate, org.thebigboss.libcolorpicker
+Version: 1.0
 Architecture: iphoneos-arm
-Description: An awesome MobileSubstrate tweak!
+Description: Customize your dock!
 Maintainer: ConorTheDev
 Author: ConorTheDev
 Section: Tweaks

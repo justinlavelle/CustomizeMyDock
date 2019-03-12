@@ -22,7 +22,7 @@ static int oldCornerRadius;
 -(void)setBackgroundAlpha:(double)arg1 {
 	// Runs original method
 	%orig;
-	if(enabled == YES && floatingDock == NO) {
+	if(enabled == YES) {
 		if (backgroundViewAlpha == nil) {
 			backgroundViewAlpha = MSHookIvar<SBWallpaperEffectView*>(self, "_backgroundView").alpha;
 		}
@@ -44,8 +44,9 @@ static int oldCornerRadius;
 
 			//Corner Radius Customization
 			self.layer.cornerRadius = cornerRadius;
-		} else {
-		// Do Nothing
+		}
+	} else {
+	// Do Nothing
 	}
 }
 

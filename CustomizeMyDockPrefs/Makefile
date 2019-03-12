@@ -1,11 +1,11 @@
 include $(THEOS)/makefiles/common.mk
 
 BUNDLE_NAME = CustomizeMyDockPrefs
-customizemydockprefs_FILES = RDXIPBRootListController.m
-customizemydockprefs_INSTALL_PATH = /Library/PreferenceBundles
-customizemydockprefs_FRAMEWORKS = UIKit
-customizemydockprefs_PRIVATE_FRAMEWORKS = Preferences
-customizemydockprefs_LIBRARIES = colorpicker
+CustomizeMyDockPrefs_FILES = RDXIPBRootListController.m
+CustomizeMyDockPrefs_INSTALL_PATH = /Library/PreferenceBundles
+CustomizeMyDockPrefs_FRAMEWORKS = UIKit
+CustomizeMyDockPrefs_PRIVATE_FRAMEWORKS = Preferences
+CustomizeMyDockPrefs_LIBRARIES = colorpicker
 
 include $(THEOS_MAKE_PATH)/bundle.mk
 
